@@ -7,14 +7,6 @@ import (
 	"testing"
 )
 
-func TestHello(t *testing.T) {
-	fn := Hello
-	num := fn()
-	if num != 42 {
-		t.Error("expected 42 got", num)
-	}
-}
-
 func TestGet(t *testing.T) {
 	tf := new(bytes.Buffer)
 	filesum := make([]byte, 20)
