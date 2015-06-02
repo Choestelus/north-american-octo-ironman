@@ -31,9 +31,7 @@ func download(out io.Writer, url string) {
 		fmt.Println("error while io.Copy() operation : ", err)
 		return
 	}
-
 	fmt.Println(n, "bytes downloaded")
-
 }
 
 func Hello() int {
@@ -41,15 +39,4 @@ func Hello() int {
 }
 
 func main() {
-	download(os.Stdout, "https://raw.githubusercontent.com/drewolson/testflight/master/README.md")
-	// boilerplating import
-
-	// equivalent to router.NewRoute().Path("/").HandlerFunc(HomeHandler)
-	// it's all go down to Route type
-
-	// TODO: encapsulate http.Handler in HandlerFunc
-	// Here there are 2 parts.
-	// 1 is register route path
-	// 2 is to register http.Handler to the route
-
 }
