@@ -34,9 +34,5 @@ func download(out io.Writer, url string) {
 	fmt.Println(n, "bytes downloaded")
 }
 
-func Hello() int {
-	return 42
-}
-
 func main() {
 }
