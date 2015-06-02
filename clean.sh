@@ -9,3 +9,5 @@ do
     rm ${!i}
 done
 
+rm north-american-octo-ironman
+
