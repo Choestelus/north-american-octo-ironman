@@ -3,9 +3,43 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
+
+func download(url string) {
+	tokens := strings.Split(url, "/")
+	filename := tokens[len(tokens)-1]
+	fmt.Println("Downloading", url, "to", filename)
+
+	fileout, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer fileout.Close()
+
+	//now downloading via http.Get()
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error downloading", url, ": ", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	//TODO: redirect progress to progress bar
+
+	n, err := io.Copy(fileout, resp.Body)
+	if err != nil {
+		fmt.Println("error while io.Copy() operation : ", err)
+		return
+	}
+
+	fmt.Println(n, "bytes downloaded")
+
+}
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "home")

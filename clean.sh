@@ -5,7 +5,7 @@ if [ "$#" -gt 0 ]; then
 fi
 for i in $(seq 1 $#);
 do
-    echo ${!i}
+    echo "removing [${!i}]"
     rm ${!i}
 done
 
