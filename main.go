@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
+	// "github.com/gorilla/mux"
+	// "github.com/gorilla/pat"
 	"io"
 	"log"
 	"net/http"
@@ -10,17 +11,12 @@ import (
 	"strings"
 )
 
-func download(url string) {
+func download(out io.Writer, url string) {
 	tokens := strings.Split(url, "/")
 	filename := tokens[len(tokens)-1]
-	fmt.Println("Downloading", url, "to", filename)
-
-	fileout, err := os.Create(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer fileout.Close()
-
+	log.Println("Downloading", url, "to", filename)
+	fmt.Println(os.Args)
+	fileout := out
 	//now downloading via http.Get()
 	resp, err := http.Get(url)
 	if err != nil {
@@ -30,7 +26,6 @@ func download(url string) {
 	defer resp.Body.Close()
 
 	//TODO: redirect progress to progress bar
-
 	n, err := io.Copy(fileout, resp.Body)
 	if err != nil {
 		fmt.Println("error while io.Copy() operation : ", err)
@@ -41,44 +36,20 @@ func download(url string) {
 
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "home")
-	log.Printf("Home route handled\n")
-}
-func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "upload")
-	log.Printf("Upload route handled\n")
-}
-func ShowHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "show")
-	log.Printf("Show route handled\n")
-}
-func TestHandler() http.Handler {
-	return http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
-}
-func TestMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Middleware called")
-		next.ServeHTTP(w, r)
-		log.Println("ServeHTTP called")
-	})
+func Hello() int {
+	return 42
 }
 
 func main() {
-	router := mux.NewRouter()
+	download(os.Stdout, "https://raw.githubusercontent.com/drewolson/testflight/master/README.md")
+	// boilerplating import
+
 	// equivalent to router.NewRoute().Path("/").HandlerFunc(HomeHandler)
 	// it's all go down to Route type
-	router.HandleFunc("/", HomeHandler)
-	router.HandleFunc("/upload", UploadHandler)
-	router.HandleFunc("/show", ShowHandler)
 
-	something := TestHandler()
 	// TODO: encapsulate http.Handler in HandlerFunc
 	// Here there are 2 parts.
 	// 1 is register route path
 	// 2 is to register http.Handler to the route
-	router.PathPrefix("/static/").Handler((something))
 
-	http.Handle("/", router)
-	http.ListenAndServe(":5001", router)
 }
