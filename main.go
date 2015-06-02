@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	// "github.com/gorilla/mux"
-	// "github.com/gorilla/pat"
+	"github.com/libgit2/git2go"
 	"io"
 	"log"
 	"net/http"
@@ -35,4 +34,15 @@ func download(out io.Writer, url string) {
 }
 
 func main() {
+	repo, err := git.Clone("https://github.com/Choestelus/vimrc.git", "./test", &git.CloneOptions{})
+	if err != nil {
+		log.Fatalln("error :", err)
+	}
+	head, err := repo.Head()
+	if err != nil {
+		log.Fatalln("error :", err)
+	}
+	log.Println(repo.Path())
+	head_commit, err := repo.LookupCommit(head.Target())
+	log.Printf("%x\n", head_commit.Id)
 }

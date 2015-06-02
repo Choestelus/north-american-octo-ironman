@@ -10,4 +10,4 @@ do
 done
 
 rm north-american-octo-ironman
-
+rm -rf test/
