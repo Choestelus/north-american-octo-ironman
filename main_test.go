@@ -64,5 +64,23 @@ func TestHashGit(t *testing.T) {
 	t.Logf("commencing hash test")
 }
 func TestGit(t *testing.T) {
+	odb, err := repo.Odb()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	err = odb.ForEach(func(oid *git.Oid) error {
+		obj, err := repo.Lookup(oid)
+		if err != nil {
+			log.Fatalln("Lookup", err)
+		}
+		switch obj := obj.(type) {
+		default:
+		case *git.Blob:
+			fmt.Println("obj : [%v]", obj)
+
+		}
+		return nil
+	})
 
 }
