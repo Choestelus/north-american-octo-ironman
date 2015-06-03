@@ -78,7 +78,12 @@ func TestHashGit(t *testing.T) {
 		case *git.Blob:
 			fmt.Printf("git hash = [%v]", obj.Id())
 			fmt.Printf("file hash %T = [%x]\n", sha1.Sum(([]byte)("eiei")), sha1.Sum(obj.Contents()))
-			sha1sum := sha1.Sum(obj.Contents())
+			someobj := obj.Contents()
+			var somestr string
+			somestr = fmt.Sprintf("blob %v\000", obj.Size())
+			fmt.Printf("[%v]\n", somestr)
+			someobj = append([]byte(somestr), someobj...)
+			sha1sum := sha1.Sum(someobj)
 			if !bytes.Equal(([]byte)(obj.Id()[:]), sha1sum[:]) {
 				log.Fatalf("expected %v got %x", obj.Id(), sha1sum)
 			}
