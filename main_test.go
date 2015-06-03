@@ -4,11 +4,37 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"encoding/hex"
+	"fmt"
+	"github.com/libgit2/git2go"
+	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 )
 
+var (
+	repo *git.Repository
+	err  error
+)
+
 func setup() {
+	// log.SetOutput(ioutil.Discard)
+	log.Printf("testprint")
+	repo, err = git.OpenRepository("./test")
+	if err != nil {
+		log.Println(err)
+		repo, err = git.Clone("https://github.com/Choestelus/vimrc.git", "./test", &git.CloneOptions{})
+		if err != nil {
+			log.Panicln(err)
+		}
+	}
+
+	head, err := repo.Head()
+	if err != nil {
+		log.Fatalln("error :", err)
+	}
+	head_commit, err := repo.LookupCommit(head.Target())
+	fmt.Fprintf(ioutil.Discard, "%v", head_commit.Id())
 }
 func teardown() {
 }
@@ -33,6 +59,9 @@ func TestGet(t *testing.T) {
 	if !bytes.Equal(sha1sum[:], filesum) {
 		t.Errorf("expected %x got %x", filesum, sha1sum)
 	}
+}
+func TestHashGit(t *testing.T) {
+	t.Logf("commencing hash test")
 }
 func TestGit(t *testing.T) {
 
