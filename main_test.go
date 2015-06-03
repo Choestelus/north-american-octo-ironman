@@ -22,7 +22,7 @@ func setup() {
 	log.Printf("testprint")
 	repo, err = git.OpenRepository("./test")
 	if err != nil {
-		log.Println(err)
+		log.Println("open repository error: ", err)
 		repo, err = git.Clone("https://github.com/Choestelus/vimrc.git", "./test", &git.CloneOptions{})
 		if err != nil {
 			log.Panicln(err)
@@ -31,13 +31,14 @@ func setup() {
 
 	head, err := repo.Head()
 	if err != nil {
-		log.Fatalln("error :", err)
+		log.Fatalln("get repo head error :", err)
 	}
 	head_commit, err := repo.LookupCommit(head.Target())
 	fmt.Fprintf(ioutil.Discard, "%v", head_commit.Id())
 }
 func teardown() {
 }
+
 func TestMain(m *testing.M) {
 
 	setup()
@@ -62,8 +63,6 @@ func TestGet(t *testing.T) {
 }
 func TestHashGit(t *testing.T) {
 	t.Logf("commencing hash test")
-}
-func TestGit(t *testing.T) {
 	odb, err := repo.Odb()
 	if err != nil {
 		log.Fatalln(err)
@@ -77,10 +76,16 @@ func TestGit(t *testing.T) {
 		switch obj := obj.(type) {
 		default:
 		case *git.Blob:
-			fmt.Println("obj : [%v]", obj)
-
+			fmt.Printf("git hash = [%v]", obj.Id())
+			fmt.Printf("file hash %T = [%x]\n", sha1.Sum(([]byte)("eiei")), sha1.Sum(obj.Contents()))
+			sha1sum := sha1.Sum(obj.Contents())
+			if !bytes.Equal(([]byte)(obj.Id()[:]), sha1sum[:]) {
+				log.Fatalf("expected %v got %x", obj.Id(), sha1sum)
+			}
 		}
 		return nil
 	})
+}
+func TestGit(t *testing.T) {
 
 }
