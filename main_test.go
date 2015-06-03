@@ -4,9 +4,21 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"encoding/hex"
+	"os"
 	"testing"
 )
 
+func setup() {
+}
+func teardown() {
+}
+func TestMain(m *testing.M) {
+
+	setup()
+	ret := m.Run()
+	teardown()
+	os.Exit(ret)
+}
 func TestGet(t *testing.T) {
 	tf := new(bytes.Buffer)
 	filesum := make([]byte, 20)
@@ -21,4 +33,7 @@ func TestGet(t *testing.T) {
 	if !bytes.Equal(sha1sum[:], filesum) {
 		t.Errorf("expected %x got %x", filesum, sha1sum)
 	}
+}
+func TestGit(t *testing.T) {
+
 }
