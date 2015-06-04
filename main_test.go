@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -18,8 +19,7 @@ var (
 )
 
 func setup() {
-	// log.SetOutput(ioutil.Discard)
-	log.Printf("testprint")
+	// log.Printf("testprint")
 	repo, err = git.OpenRepository("./test")
 	if err != nil {
 		log.Println("open repository error: ", err)
@@ -46,6 +46,16 @@ func TestMain(m *testing.M) {
 	teardown()
 	os.Exit(ret)
 }
+func TestGit_to_slice(t *testing.T) {
+	var somearr [20]byte
+	var someslice []byte
+	output := git_to_slice(somearr)
+	// t.Logf("expected %T got %T\n", someslice, output)
+	if reflect.TypeOf(output) != reflect.TypeOf(someslice) {
+		t.Errorf("type mismatched:\nexpect []byte got %T", output)
+	}
+}
+
 func TestGet(t *testing.T) {
 	tf := new(bytes.Buffer)
 	filesum := make([]byte, 20)
@@ -55,14 +65,13 @@ func TestGet(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	download(tf, "https://raw.githubusercontent.com/Choestelus/vimrc/master/_vimrc")
+	download(tf, "http://127.0.0.1/_vimrc")
 	sha1sum := sha1.Sum(tf.Bytes())
 	if !bytes.Equal(sha1sum[:], filesum) {
 		t.Errorf("expected %x got %x", filesum, sha1sum)
 	}
 }
 func TestHashGit(t *testing.T) {
-	t.Logf("commencing hash test")
 	odb, err := repo.Odb()
 	if err != nil {
 		log.Fatalln(err)
@@ -76,12 +85,12 @@ func TestHashGit(t *testing.T) {
 		switch obj := obj.(type) {
 		default:
 		case *git.Blob:
-			fmt.Printf("git hash = [%v]", obj.Id())
-			fmt.Printf("file hash %T = [%x]\n", sha1.Sum(([]byte)("eiei")), sha1.Sum(obj.Contents()))
+			// fmt.Printf("git hash = [%v]", obj.Id())
+			// fmt.Printf("file hash %T = [%x]\n", sha1.Sum(([]byte)("eiei")), sha1.Sum(obj.Contents()))
 			someobj := obj.Contents()
 			var somestr string
 			somestr = fmt.Sprintf("blob %v\000", obj.Size())
-			fmt.Printf("[%v]\n", somestr)
+			// fmt.Printf("[%v]\n", somestr)
 			someobj = append([]byte(somestr), someobj...)
 			sha1sum := sha1.Sum(someobj)
 			if !bytes.Equal(([]byte)(obj.Id()[:]), sha1sum[:]) {
