@@ -19,7 +19,6 @@ var (
 )
 
 func setup() {
-	// log.Printf("testprint")
 	repo, err = git.OpenRepository("./test")
 	if err != nil {
 		log.Println("open repository error: ", err)
@@ -35,14 +34,17 @@ func setup() {
 	}
 	head_commit, err := repo.LookupCommit(head.Target())
 	fmt.Fprintf(ioutil.Discard, "%v", head_commit.Id())
+	log.Printf("test environment is set\n")
 }
 func teardown() {
+	log.Printf("test environment is tear down\n")
 }
 
 func TestMain(m *testing.M) {
 
 	setup()
 	ret := m.Run()
+	log.Printf("returning %v\n", ret)
 	teardown()
 	os.Exit(ret)
 }
